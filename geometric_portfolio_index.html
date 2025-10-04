@@ -1,0 +1,299 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>Omerwix — Geometric Portfolio</title>
+  <style>
+    /* Core layout */
+    :root{
+      --purple: #6A0DAD;
+      --silver: #F5F5F5;
+      --metal: #C0C0C0;
+      --charcoal: #1A1A1A;
+      --lav-grad: linear-gradient(135deg, rgba(106,13,173,0.18), rgba(197,154,255,0.08));
+      --bg-deep: radial-gradient(1200px 600px at 10% 10%, rgba(82,35,174,0.16), transparent 15%),
+                 radial-gradient(1000px 500px at 90% 90%, rgba(20,10,60,0.24), transparent 20%),
+                 linear-gradient(180deg,#0d0d0f 0%, #121114 60%);
+      --glass: rgba(255,255,255,0.04);
+      font-family: Arial, Helvetica, sans-serif;
+    }
+    html,body{height:100%;margin:0;background:var(--bg-deep);color:var(--silver);}
+    a{color:inherit;text-decoration:none}
+
+    /* Header */
+    header{position:fixed;top:0;left:0;right:0;padding:18px 36px;display:flex;align-items:center;justify-content:space-between;backdrop-filter:blur(6px);z-index:50}
+    .brand{display:flex;align-items:center;gap:12px}
+    .mark{width:36px;height:36px;border-radius:8px;background:linear-gradient(135deg,var(--purple),#3a0aa0);display:flex;align-items:center;justify-content:center;font-weight:bold}
+    nav{display:flex;gap:18px;align-items:center}
+    nav a{font-size:13px;letter-spacing:2px;text-transform:uppercase;padding:6px 8px;border-radius:6px;opacity:.9}
+    .cta{padding:10px 14px;border-radius:10px;background:linear-gradient(90deg,rgba(106,13,173,0.95),rgba(148,68,206,0.95));box-shadow:0 6px 18px rgba(106,13,173,0.18);font-weight:bold}
+
+    /* Hero */
+    .hero{min-height:100vh;display:flex;align-items:center;padding:140px 6vw 80px;position:relative;overflow:hidden}
+    .hero-grid{display:grid;grid-template-columns:1fr 420px;gap:48px;align-items:center;width:100%;max-width:1200px;margin:0 auto}
+    .hero h1{font-size:46px;margin:0;letter-spacing:6px;text-transform:uppercase}
+    .hero p{margin:18px 0;font-size:16px;max-width:520px;line-height:1.5;color:var(--metal)}
+    .hero .hero-art{height:420px;border-radius:18px;background:linear-gradient(135deg,#2a0a5c, #3b1a78 40%, rgba(106,13,173,0.75));position:relative;display:flex;align-items:center;justify-content:center;box-shadow:0 20px 60px rgba(10,6,20,0.6)}
+    .hero .hero-art .overlay-shapes{position:absolute;inset:0;pointer-events:none}
+    .btn-row{display:flex;gap:12px;margin-top:12px}
+
+    /* Filters */
+    .filters{display:flex;gap:10px;margin:18px 0}
+    .filter-btn{background:transparent;border:1px solid rgba(255,255,255,0.06);padding:8px 12px;border-radius:8px;cursor:pointer}
+    .filter-btn.active{background:rgba(106,13,173,0.12);border-color:rgba(106,13,173,0.3);}
+
+    /* Portfolio grid */
+    .portfolio{padding:80px 6vw 40px;max-width:1200px;margin:0 auto}
+    .grid{display:grid;grid-template-columns:repeat(3,1fr);gap:18px}
+    .card{background:linear-gradient(180deg,rgba(255,255,255,0.02),rgba(255,255,255,0.006));border-radius:12px;overflow:hidden;position:relative;cursor:pointer;min-height:220px;display:flex;align-items:flex-end}
+    .card .thumb{width:100%;height:100%;object-fit:cover}
+    .card .meta{padding:14px;background:linear-gradient(180deg,transparent,rgba(0,0,0,0.32));backdrop-filter:blur(2px)}
+    .tag{font-size:12px;letter-spacing:1.5px;text-transform:uppercase}
+
+    /* Case modal */
+    .modal{position:fixed;inset:0;display:none;align-items:center;justify-content:center;background:rgba(0,0,0,0.6);z-index:120}
+    .modal.open{display:flex}
+    .modal-card{width:min(1000px,94%);max-height:86vh;overflow:auto;background:#0f0f10;border-radius:12px;padding:22px}
+
+    /* Testimonials */
+    .testimonials{padding:40px 6vw;background:linear-gradient(180deg,rgba(255,255,255,0.01),transparent);margin-top:20px}
+    .test-row{display:flex;gap:14px}
+    .quote{padding:18px;border-radius:10px;background:var(--glass);min-width:220px}
+
+    /* Contact */
+    .contact{padding:40px 6vw 140px}
+    .form{max-width:640px}
+    input,textarea{width:100%;padding:12px;border-radius:8px;border:1px solid rgba(255,255,255,0.06);background:transparent;color:var(--silver);margin-bottom:12px}
+    .submit{padding:12px 16px;border-radius:10px;background:linear-gradient(90deg,var(--purple),#8e4fd6);cursor:pointer}
+
+    /* Footer */
+    footer{padding:20px 6vw;text-align:center;color:rgba(255,255,255,0.6);font-size:13px}
+
+    /* Animations and responsive */
+    .fade-in{opacity:0;transform:translateY(14px);transition:all 600ms cubic-bezier(.2,.9,.2,1)}
+    .fade-in.show{opacity:1;transform:none}
+    .btn-glow{transition:all 260ms ease;}
+    .btn-glow:hover{box-shadow:0 8px 28px rgba(106,13,173,0.24);transform:translateY(-3px)}
+
+    @media(max-width:980px){
+      .hero-grid{grid-template-columns:1fr;gap:28px}
+      .grid{grid-template-columns:repeat(2,1fr)}
+    }
+    @media(max-width:640px){
+      nav{display:none}
+      .grid{grid-template-columns:1fr}
+      .hero h1{font-size:30px}
+      header{padding:12px 18px}
+    }
+
+    /* Subtle geometry using svg lines */
+    .geo-lines{position:absolute;inset:0;pointer-events:none;opacity:0.9}
+  </style>
+</head>
+<body>
+  <header>
+    <div class="brand">
+      <div class="mark">OW</div>
+      <div style="font-weight:600">Omerwix</div>
+    </div>
+    <nav>
+      <a href="#home">Home</a>
+      <a href="#portfolio">Portfolio</a>
+      <a href="#about">About</a>
+      <a href="#contact" class="cta btn-glow">Contact</a>
+    </nav>
+  </header>
+
+  <main>
+    <section class="hero" id="home">
+      <div class="hero-grid">
+        <div>
+          <h1 class="fade-in">OMERWIX</h1>
+          <p class="fade-in">Professional graphic designer, branding specialist, logo designer. Focus on geometric systems, precise layouts, and digital art with a modern purple-silver identity.</p>
+          <div class="btn-row fade-in">
+            <a href="#portfolio" class="cta btn-glow">Explore My Work</a>
+            <a href="#contact" class="filter-btn">Get in Touch</a>
+          </div>
+          <div style="margin-top:18px" class="fade-in">
+            <div class="filters">
+              <button class="filter-btn active" data-cat="all">All</button>
+              <button class="filter-btn" data-cat="branding">Branding Design</button>
+              <button class="filter-btn" data-cat="logo">Logo Design</button>
+              <button class="filter-btn" data-cat="social">Social Media Design</button>
+              <button class="filter-btn" data-cat="photo">Photo Manipulation</button>
+            </div>
+          </div>
+        </div>
+        <div class="hero-art fade-in">
+          <svg class="overlay-shapes geo-lines" viewBox="0 0 1200 700" preserveAspectRatio="xMidYMid slice" style="width:100%;height:100%">
+            <defs>
+              <linearGradient id="g1" x1="0" x2="1">
+                <stop offset="0" stop-color="#6A0DAD" stop-opacity="0.9"/>
+                <stop offset="1" stop-color="#3a0aa0" stop-opacity="0.7"/>
+              </linearGradient>
+            </defs>
+            <rect x="0" y="0" width="1200" height="700" fill="url(#g1)" opacity="0.08"/>
+            <g stroke="rgba(255,255,255,0.06)" stroke-width="1">
+              <line x1="50" y1="600" x2="1150" y2="10" />
+              <line x1="60" y1="20" x2="1180" y2="660" />
+              <polygon points="1080,20 1160,120 980,120" fill="rgba(255,255,255,0.02)" />
+            </g>
+            <circle cx="200" cy="120" r="34" fill="rgba(255,255,255,0.03)" />
+          </svg>
+        </div>
+      </div>
+    </section>
+
+    <section class="portfolio" id="portfolio">
+      <h2 style="letter-spacing:4px;text-transform:uppercase">Portfolio</h2>
+      <div class="grid" id="grid">
+        <!-- Example cards with data-category -->
+        <div class="card fade-in" data-cat="branding" data-id="1">
+          <div class="meta">
+            <div class="tag">Branding Design</div>
+            <div style="font-weight:600">Eclipse Cosmetics</div>
+          </div>
+        </div>
+        <div class="card fade-in" data-cat="logo" data-id="2">
+          <div class="meta">
+            <div class="tag">Logo Design</div>
+            <div style="font-weight:600">Marka Logo Series</div>
+          </div>
+        </div>
+        <div class="card fade-in" data-cat="social" data-id="3">
+          <div class="meta">
+            <div class="tag">Social Media</div>
+            <div style="font-weight:600">Launch Campaign</div>
+          </div>
+        </div>
+        <div class="card fade-in" data-cat="photo" data-id="4">
+          <div class="meta">
+            <div class="tag">Photo Manipulation</div>
+            <div style="font-weight:600">Surreal Portrait</div>
+          </div>
+        </div>
+        <div class="card fade-in" data-cat="branding" data-id="5">
+          <div class="meta">
+            <div class="tag">Branding Design</div>
+            <div style="font-weight:600">Studio Identity</div>
+          </div>
+        </div>
+        <div class="card fade-in" data-cat="logo" data-id="6">
+          <div class="meta">
+            <div class="tag">Logo Design</div>
+            <div style="font-weight:600">GeoMark</div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section class="testimonials" aria-label="testimonials">
+      <h3 style="letter-spacing:3px;text-transform:uppercase">Testimonials</h3>
+      <div class="test-row">
+        <div class="quote fade-in">"Clear process, timely delivery, strong visual language."</div>
+        <div class="quote fade-in">"Professional, precise, excellent at branding systems."</div>
+      </div>
+    </section>
+
+    <section class="contact" id="contact">
+      <h3 style="letter-spacing:3px;text-transform:uppercase">Contact</h3>
+      <div class="form">
+        <input placeholder="Your name" aria-label="name">
+        <input placeholder="Your email" aria-label="email">
+        <textarea rows="6" placeholder="Message" aria-label="message"></textarea>
+        <div style="display:flex;gap:10px">
+          <button class="submit">Send message</button>
+          <div style="display:flex;align-items:center;gap:8px;color:var(--metal)">
+            <span>Instagram</span>
+            <span>Behance</span>
+            <span>Dribbble</span>
+            <span>LinkedIn</span>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <footer>
+      © <span id="year"></span> Omerwix. All rights reserved.
+    </footer>
+
+    <!-- Modal for case study -->
+    <div class="modal" id="modal">
+      <div class="modal-card" role="dialog" aria-modal="true">
+        <button id="closeModal" style="float:right;background:transparent;border:none;color:var(--metal);font-size:16px">Close</button>
+        <h4 id="modalTitle" style="text-transform:uppercase;letter-spacing:3px"></h4>
+        <p id="modalDesc" style="color:var(--metal)"></p>
+        <div id="modalImages" style="display:grid;grid-template-columns:repeat(2,1fr);gap:12px;margin-top:12px"></div>
+      </div>
+    </div>
+
+  </main>
+
+  <script>
+    // Basic interactions: filters, modal, fade in
+    document.getElementById('year').textContent = new Date().getFullYear();
+
+    const filters = Array.from(document.querySelectorAll('.filter-btn'));
+    const cards = Array.from(document.querySelectorAll('.card'));
+
+    filters.forEach(btn =>{
+      btn.addEventListener('click', ()=>{
+        filters.forEach(b=>b.classList.remove('active'));
+        btn.classList.add('active');
+        const cat = btn.dataset.cat;
+        cards.forEach(c=>{
+          if(cat === 'all' || c.dataset.cat === cat){
+            c.style.display = '';
+          } else {
+            c.style.display = 'none';
+          }
+        });
+      });
+    });
+
+    // Modal open on card click
+    const modal = document.getElementById('modal');
+    const modalTitle = document.getElementById('modalTitle');
+    const modalDesc = document.getElementById('modalDesc');
+    const modalImages = document.getElementById('modalImages');
+    const closeModal = document.getElementById('closeModal');
+
+    cards.forEach(c=>{
+      c.addEventListener('click', ()=>{
+        const id = c.dataset.id;
+        modalTitle.textContent = c.querySelector('.tag').textContent + ' — ' + c.querySelector('div[style]').textContent;
+        modalDesc.textContent = 'Project brief and process notes. Use this area to add concept, tools, and outcomes.';
+        modalImages.innerHTML = '<div style="height:200px;background:linear-gradient(135deg,#45107a,#6A0DAD)"></div><div style="height:200px;background:linear-gradient(135deg,#2b0a52,#4a0b7a)"></div>';
+        modal.classList.add('open');
+      });
+    });
+    closeModal.addEventListener('click', ()=>{modal.classList.remove('open')});
+    modal.addEventListener('click', e=>{if(e.target === modal) modal.classList.remove('open')});
+
+    // Fade in using IntersectionObserver
+    const io = new IntersectionObserver((entries)=>{
+      entries.forEach(en=>{
+        if(en.isIntersecting) en.target.classList.add('show');
+      });
+    },{threshold:0.14});
+    document.querySelectorAll('.fade-in').forEach(el=>io.observe(el));
+
+    // Simple parallax for hero background on mouse move for desktop
+    const hero = document.querySelector('.hero-art');
+    if(window.innerWidth > 800){
+      document.querySelector('.hero').addEventListener('mousemove', e=>{
+        const rX = (e.clientX - window.innerWidth/2)/60;
+        const rY = (e.clientY - window.innerHeight/2)/60;
+        hero.style.transform = `translate(${rX}px, ${rY}px) scale(1.01)`;
+      });
+      document.querySelector('.hero').addEventListener('mouseleave', ()=>{hero.style.transform = ''});
+    }
+
+    // Accessibility: focus outlines for keyboard users
+    document.addEventListener('keydown', e=>{
+      if(e.key === 'Tab') document.body.style.outline = 'none';
+    });
+  </script>
+</body>
+</html>
